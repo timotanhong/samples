@@ -139,9 +139,21 @@ class GitHubSourcer:
                     params={"q": query, "per_page": per_page, "page": page, "sort": "followers"},
                 )
 
-                if resp.status_code == 403:
-                    logger.warning("GitHub rate limit hit, waiting...")
-                    time.sleep(60)
+                # Track rate limit from response headers
+                remaining = resp.headers.get("x-ratelimit-remaining")
+                if remaining is not None:
+                    self.rate_limit_remaining = int(remaining)
+
+                if resp.status_code == 403 or resp.status_code == 429:
+                    reset_time = resp.headers.get("x-ratelimit-reset")
+                    if reset_time:
+                        import time as _time
+                        wait_secs = max(int(reset_time) - int(_time.time()), 1)
+                        wait_secs = min(wait_secs, 120)  # Cap at 2 minutes
+                    else:
+                        wait_secs = 60
+                    logger.warning(f"GitHub rate limit hit, waiting {wait_secs}s...")
+                    time.sleep(wait_secs)
                     continue
 
                 if resp.status_code != 200:
@@ -177,6 +189,15 @@ class GitHubSourcer:
 
         try:
             resp = self.client.get(f"/users/{username}")
+            remaining = resp.headers.get("x-ratelimit-remaining")
+            if remaining is not None:
+                self.rate_limit_remaining = int(remaining)
+
+            if resp.status_code == 403 or resp.status_code == 429:
+                logger.warning(f"Rate limited on user fetch for {username}, skipping")
+                time.sleep(10)
+                return None
+
             if resp.status_code != 200:
                 return None
 
@@ -227,11 +248,14 @@ class GitHubSourcer:
             return None
 
     def _check_rate_limit(self):
-        """Basic rate limit awareness."""
-        if self.rate_limit_remaining < 5:
-            logger.info("Approaching rate limit, sleeping 30s...")
-            time.sleep(30)
-            self.rate_limit_remaining = 100
+        """Rate limit awareness — pause when running low."""
+        if self.rate_limit_remaining < 3:
+            logger.info(f"Rate limit low ({self.rate_limit_remaining} remaining), sleeping 60s...")
+            time.sleep(60)
+            self.rate_limit_remaining = 10  # Conservative reset
+        elif self.rate_limit_remaining < 10:
+            # Slow down when approaching limit
+            time.sleep(3)
 
     def save_candidates(self, candidates: list[GitHubCandidate]) -> dict:
         """Save GitHub candidates to the database."""
