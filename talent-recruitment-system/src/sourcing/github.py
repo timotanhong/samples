@@ -80,7 +80,7 @@ class GitHubSourcer:
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
         }
-        if settings.github_token:
+        if settings.github_token_valid:
             headers["Authorization"] = f"Bearer {settings.github_token}"
 
         self.client = httpx.Client(
