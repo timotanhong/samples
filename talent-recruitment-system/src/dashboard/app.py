@@ -575,26 +575,55 @@ def _execute_pipeline_action(action: str):
                 sourcer.close()
 
     elif action == "extract_requirements":
-        with st.spinner("Extracting requirements with Claude..."):
-            from src.matching.engine import MatchingEngine
-            engine = MatchingEngine()
-            try:
-                engine.extract_and_save_requirements()
-                st.success("Requirements extracted!")
-            except Exception as e:
-                st.error(f"Extraction error: {e}")
+        from src.matching.engine import MatchingEngine
+        engine = MatchingEngine()
+
+        progress_bar = st.progress(0, text="Starting requirement extraction...")
+
+        def on_extract_progress(current, total, title):
+            pct = current / total if total > 0 else 1.0
+            progress_bar.progress(pct, text=f"Extracting {current}/{total}: **{title}**")
+
+        try:
+            engine.extract_and_save_requirements(progress_callback=on_extract_progress)
+            progress_bar.progress(1.0, text="Extraction complete!")
+            st.success("Requirements extracted for all jobs!")
+        except Exception as e:
+            st.error(f"Extraction error: {e}")
 
     elif action == "run_matching":
         job_id = st.session_state.get("match_job_id")
         if job_id:
-            with st.spinner("Scoring candidates with Claude..."):
-                from src.matching.engine import MatchingEngine
-                engine = MatchingEngine()
-                try:
-                    results = engine.match_candidates_to_job(job_id)
-                    st.success(f"Matched {len(results)} candidates!")
-                except Exception as e:
-                    st.error(f"Matching error: {e}")
+            from src.matching.engine import MatchingEngine
+            engine = MatchingEngine()
+
+            # Progress UI
+            progress_bar = st.progress(0, text="Starting matching...")
+            status_container = st.container()
+            results_log = []
+
+            def on_progress(current, total, name, score_data):
+                pct = current / total
+                score = score_data.get("overall_score", 0) if score_data else 0
+                score_pct = int(score * 100)
+                confidence = score_data.get("confidence", "—") if score_data else "—"
+                progress_bar.progress(pct, text=f"Scoring candidate {current}/{total}: **{name}**")
+                results_log.append({
+                    "name": name,
+                    "score": score_pct,
+                    "confidence": confidence,
+                    "status": "matched" if score >= 0.3 else "below threshold",
+                })
+                with status_container:
+                    icon = "✅" if score >= 0.3 else "⬜"
+                    st.write(f"{icon} **{name}** — Score: {score_pct}% ({confidence})")
+
+            try:
+                results = engine.match_candidates_to_job(job_id, progress_callback=on_progress)
+                progress_bar.progress(1.0, text="Matching complete!")
+                st.success(f"Done! {len(results)} candidates matched above threshold.")
+            except Exception as e:
+                st.error(f"Matching error: {e}")
 
     elif action == "show_stats":
         session = get_session()

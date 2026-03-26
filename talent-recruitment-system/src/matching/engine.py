@@ -108,8 +108,12 @@ class MatchingEngine:
             logger.error(f"Claude API error for job {job.id}: {e}")
             return {}
 
-    def extract_and_save_requirements(self, job_id: int | None = None):
-        """Extract requirements for all jobs (or one) missing structured data."""
+    def extract_and_save_requirements(self, job_id: int | None = None, progress_callback=None):
+        """Extract requirements for all jobs (or one) missing structured data.
+
+        Args:
+            progress_callback: Optional callable(current, total, job_title)
+        """
         session = get_session()
         try:
             query = session.query(JobPosting).filter_by(status="active")
@@ -119,9 +123,13 @@ class MatchingEngine:
                 query = query.filter(JobPosting.required_skills.is_(None))
 
             jobs = query.all()
-            logger.info(f"Extracting requirements for {len(jobs)} jobs")
+            total = len(jobs)
+            logger.info(f"Extracting requirements for {total} jobs")
 
-            for job in jobs:
+            for i, job in enumerate(jobs):
+                if progress_callback:
+                    progress_callback(i + 1, total, job.title)
+
                 reqs = self.extract_job_requirements(job)
                 if reqs:
                     job.required_skills = json.dumps(reqs.get("required_skills", []))
@@ -179,8 +187,18 @@ class MatchingEngine:
             logger.error(f"Claude API error scoring candidate {candidate.id}: {e}")
             return {}
 
-    def match_candidates_to_job(self, job_id: int, max_candidates: int | None = None) -> list[MatchResult]:
-        """Score all candidates against a specific job and save results."""
+    def match_candidates_to_job(
+        self,
+        job_id: int,
+        max_candidates: int | None = None,
+        progress_callback=None,
+    ) -> list[MatchResult]:
+        """Score all candidates against a specific job and save results.
+
+        Args:
+            progress_callback: Optional callable(current, total, candidate_name, score_data)
+                               called after each candidate is scored.
+        """
         max_candidates = max_candidates or settings.match_top_n
         session = get_session()
         results = []
@@ -192,11 +210,16 @@ class MatchingEngine:
                 return []
 
             candidates = session.query(CandidateProfile).all()
-            logger.info(f"Scoring {len(candidates)} candidates against job: {job.title}")
+            total = len(candidates)
+            logger.info(f"Scoring {total} candidates against job: {job.title}")
 
             scored = []
-            for candidate in candidates:
+            for i, candidate in enumerate(candidates):
                 score_data = self.score_candidate(job, candidate)
+
+                if progress_callback:
+                    progress_callback(i + 1, total, candidate.name or "Unknown", score_data)
+
                 if score_data and score_data.get("overall_score", 0) >= settings.min_match_score:
                     scored.append((candidate, score_data))
 
