@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>San Francisco Trip Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>🌉 San Francisco Trip Planner</h1>
+      <p class="subtitle">Plan your perfect holiday in the City by the Bay</p>
+    </div>
+  </header>
+
+  <nav>
+    <button class="nav-btn active" data-tab="overview">Overview</button>
+    <button class="nav-btn" data-tab="transport">Transport</button>
+    <button class="nav-btn" data-tab="food">Food & Dining</button>
+    <button class="nav-btn" data-tab="sightseeing">Sightseeing</button>
+    <button class="nav-btn" data-tab="itinerary">My Itinerary</button>
+  </nav>
+
+  <main>
+    <!-- Overview Tab -->
+    <section id="overview" class="tab-content active">
+      <div class="hero-card">
+        <h2>Welcome to San Francisco!</h2>
+        <p>San Francisco is a vibrant city known for its iconic Golden Gate Bridge, historic cable cars, diverse neighborhoods, and world-class cuisine. Use this planner to organize your perfect trip.</p>
+        <div class="quick-stats">
+          <div class="stat">
+            <span class="stat-number">7x7</span>
+            <span class="stat-label">Miles (City Size)</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">60°F</span>
+            <span class="stat-label">Avg Temperature</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">200+</span>
+            <span class="stat-label">Attractions</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">11</span>
+            <span class="stat-label">Distinct Districts</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="trip-setup">
+        <h3>Set Up Your Trip</h3>
+        <form id="trip-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="arrival-date">Arrival Date</label>
+              <input type="date" id="arrival-date">
+            </div>
+            <div class="form-group">
+              <label for="departure-date">Departure Date</label>
+              <input type="date" id="departure-date">
+            </div>
+            <div class="form-group">
+              <label for="travelers">Travelers</label>
+              <select id="travelers">
+                <option value="1">1 Person</option>
+                <option value="2" selected>2 People</option>
+                <option value="3">3 People</option>
+                <option value="4">4 People</option>
+                <option value="5+">5+ People</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="budget">Budget Level</label>
+              <select id="budget">
+                <option value="budget">Budget</option>
+                <option value="moderate" selected>Moderate</option>
+                <option value="luxury">Luxury</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary">Save Trip Details</button>
+        </form>
+      </div>
+
+      <div class="tips-section">
+        <h3>Quick Tips</h3>
+        <div class="tips-grid">
+          <div class="tip-card">
+            <span class="tip-icon">🧥</span>
+            <h4>Dress in Layers</h4>
+            <p>SF weather changes throughout the day. Bring a jacket even in summer — the famous fog keeps things cool.</p>
+          </div>
+          <div class="tip-card">
+            <span class="tip-icon">🚶</span>
+            <h4>Wear Comfy Shoes</h4>
+            <p>The city is hilly! Comfortable walking shoes are essential for exploring neighborhoods on foot.</p>
+          </div>
+          <div class="tip-card">
+            <span class="tip-icon">🎫</span>
+            <h4>Get a CityPASS</h4>
+            <p>Save up to 46% on top attractions with a CityPASS — includes Alcatraz, aquarium, and more.</p>
+          </div>
+          <div class="tip-card">
+            <span class="tip-icon">📱</span>
+            <h4>Use Transit Apps</h4>
+            <p>Download the MuniMobile app for easy public transit payments and real-time arrival info.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Transport Tab -->
+    <section id="transport" class="tab-content">
+      <h2>Getting Around San Francisco</h2>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="public">Public Transit</button>
+        <button class="filter-btn" data-filter="rideshare">Rideshare</button>
+        <button class="filter-btn" data-filter="rental">Rentals</button>
+        <button class="filter-btn" data-filter="scenic">Scenic</button>
+      </div>
+
+      <div class="cards-grid" id="transport-cards">
+        <div class="card" data-category="public">
+          <div class="card-badge">Public Transit</div>
+          <h3>BART (Bay Area Rapid Transit)</h3>
+          <p>Fast rail system connecting SF to the airport (SFO), Oakland, and East Bay. Best for airport transfers and cross-bay travel.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $2.50 – $12.00</span>
+            <span class="detail"><strong>Hours:</strong> 5 AM – Midnight</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'BART Transit', '$2.50–$12.00 per ride')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="public">
+          <div class="card-badge">Public Transit</div>
+          <h3>Muni Bus & Metro</h3>
+          <p>The city's bus and light-rail network covering all neighborhoods. Use the MuniMobile app for easy payment.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $2.50 per ride</span>
+            <span class="detail"><strong>Pass:</strong> $5/day, $21/week</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'Muni Bus & Metro', '$2.50/ride or $5/day pass')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="scenic">
+          <div class="card-badge scenic">Scenic</div>
+          <h3>Cable Cars</h3>
+          <p>An iconic SF experience! Three lines run through the city. The Powell-Hyde line offers the best views. Expect lines at popular stops.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $8 per ride</span>
+            <span class="detail"><strong>Tip:</strong> Board at less busy stops</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'Cable Car Ride', '$8 per ride')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="rideshare">
+          <div class="card-badge rideshare">Rideshare</div>
+          <h3>Uber / Lyft</h3>
+          <p>Widely available throughout the city. Convenient for late-night travel or reaching areas with limited transit.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $10 – $30 typical</span>
+            <span class="detail"><strong>Tip:</strong> Surge pricing at peak hours</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'Uber/Lyft', '$10–$30 per ride')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="rental">
+          <div class="card-badge rental">Rental</div>
+          <h3>Bike Rentals (Bay Wheels)</h3>
+          <p>Perfect for biking across the Golden Gate Bridge. Docking stations throughout the city. E-bikes also available.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $3.50/trip or $25/day</span>
+            <span class="detail"><strong>Best for:</strong> Golden Gate Bridge ride</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'Bike Rental (Bay Wheels)', '$3.50/trip or $25/day')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="scenic">
+          <div class="card-badge scenic">Scenic</div>
+          <h3>Ferry (Golden Gate / Bay)</h3>
+          <p>Scenic ferry rides to Sausalito, Tiburon, and Angel Island. Beautiful views of the skyline and Golden Gate Bridge.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $8 – $14</span>
+            <span class="detail"><strong>Departs:</strong> Ferry Building</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'Bay Ferry Ride', '$8–$14 per trip')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="rental">
+          <div class="card-badge rental">Rental</div>
+          <h3>Car Rental</h3>
+          <p>Not recommended for downtown but useful for day trips to Napa Valley, Muir Woods, or along the coast.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $40 – $100/day</span>
+            <span class="detail"><strong>Tip:</strong> Parking is expensive downtown</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'Car Rental', '$40–$100/day')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="scenic">
+          <div class="card-badge scenic">Scenic</div>
+          <h3>Historic Streetcars (F-Line)</h3>
+          <p>Vintage streetcars running along Market Street to Fisherman's Wharf. A fun and practical way to travel the waterfront.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $2.50</span>
+            <span class="detail"><strong>Route:</strong> Castro to Fisherman's Wharf</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('transport', 'F-Line Streetcar', '$2.50 per ride')">+ Add to Itinerary</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Food Tab -->
+    <section id="food" class="tab-content">
+      <h2>Food & Dining</h2>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="must-try">Must Try</button>
+        <button class="filter-btn" data-filter="budget-eat">Budget</button>
+        <button class="filter-btn" data-filter="fine-dining">Fine Dining</button>
+        <button class="filter-btn" data-filter="market">Markets</button>
+      </div>
+
+      <div class="cards-grid" id="food-cards">
+        <div class="card" data-category="must-try">
+          <div class="card-badge must-try">Must Try</div>
+          <h3>Clam Chowder in Sourdough Bowl</h3>
+          <p>The quintessential SF food experience. Head to Boudin Bakery at Fisherman's Wharf for the original sourdough bread bowl.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Fisherman's Wharf</span>
+            <span class="detail"><strong>Price:</strong> $12 – $18</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Clam Chowder at Boudin Bakery', '$12–$18')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="must-try">
+          <div class="card-badge must-try">Must Try</div>
+          <h3>Mission-Style Burrito</h3>
+          <p>Giant, foil-wrapped burritos from the Mission District. La Taqueria and El Farolito are legendary spots.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Mission District</span>
+            <span class="detail"><strong>Price:</strong> $10 – $15</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Mission Burrito (La Taqueria)', '$10–$15')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="must-try">
+          <div class="card-badge must-try">Must Try</div>
+          <h3>Dim Sum in Chinatown</h3>
+          <p>SF has the oldest Chinatown in North America. Try dim sum at City View or Good Mong Kok Bakery for fresh BBQ pork buns.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Chinatown</span>
+            <span class="detail"><strong>Price:</strong> $15 – $30</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Dim Sum in Chinatown', '$15–$30')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="fine-dining">
+          <div class="card-badge fine-dining">Fine Dining</div>
+          <h3>Waterbar</h3>
+          <p>Stunning waterfront seafood restaurant with views of the Bay Bridge. Excellent raw bar and sustainable seafood.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Embarcadero</span>
+            <span class="detail"><strong>Price:</strong> $60 – $120</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Dinner at Waterbar', '$60–$120')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="budget-eat">
+          <div class="card-badge budget-eat">Budget</div>
+          <h3>In-N-Out Burger</h3>
+          <p>The iconic West Coast burger chain. The Fisherman's Wharf location has waterfront seating with Golden Gate views.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Fisherman's Wharf</span>
+            <span class="detail"><strong>Price:</strong> $5 – $10</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'In-N-Out Burger', '$5–$10')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="market">
+          <div class="card-badge market">Market</div>
+          <h3>Ferry Building Marketplace</h3>
+          <p>A foodie paradise with artisan vendors, cafes, and a Saturday farmers market. Try Blue Bottle Coffee and Cowgirl Creamery.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Embarcadero</span>
+            <span class="detail"><strong>Price:</strong> $10 – $25</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Ferry Building Marketplace', '$10–$25')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="must-try">
+          <div class="card-badge must-try">Must Try</div>
+          <h3>Ghirardelli Chocolate</h3>
+          <p>Visit the original Ghirardelli Square for free chocolate samples, hot fudge sundaes, and the famous chocolate shop.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Ghirardelli Square</span>
+            <span class="detail"><strong>Price:</strong> $8 – $15</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Ghirardelli Chocolate Sundae', '$8–$15')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="fine-dining">
+          <div class="card-badge fine-dining">Fine Dining</div>
+          <h3>Hog Island Oyster Co.</h3>
+          <p>Fresh, sustainably farmed oysters at the Ferry Building. Pair with a crisp white wine and bay views.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Ferry Building</span>
+            <span class="detail"><strong>Price:</strong> $30 – $60</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Oysters at Hog Island', '$30–$60')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="budget-eat">
+          <div class="card-badge budget-eat">Budget</div>
+          <h3>Tartine Bakery</h3>
+          <p>World-famous bakery in the Mission. The morning bun and country bread are legendary. Arrive early to beat the line.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Where:</strong> Mission District</span>
+            <span class="detail"><strong>Price:</strong> $5 – $12</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('food', 'Tartine Bakery Pastries', '$5–$12')">+ Add to Itinerary</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sightseeing Tab -->
+    <section id="sightseeing" class="tab-content">
+      <h2>Sightseeing & Attractions</h2>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" data-filter="all">All</button>
+        <button class="filter-btn" data-filter="landmark">Landmarks</button>
+        <button class="filter-btn" data-filter="nature">Nature</button>
+        <button class="filter-btn" data-filter="culture">Culture</button>
+        <button class="filter-btn" data-filter="neighborhood">Neighborhoods</button>
+      </div>
+
+      <div class="cards-grid" id="sightseeing-cards">
+        <div class="card" data-category="landmark">
+          <div class="card-badge landmark">Landmark</div>
+          <h3>Golden Gate Bridge</h3>
+          <p>Walk or bike across the iconic 1.7-mile suspension bridge. Visit Battery Spencer on the Marin side for the best photo spot.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free</span>
+            <span class="detail"><strong>Time:</strong> 1 – 2 hours</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Golden Gate Bridge Walk', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="landmark">
+          <div class="card-badge landmark">Landmark</div>
+          <h3>Alcatraz Island</h3>
+          <p>Tour the infamous former prison on an island in the bay. The audio tour is excellent. Book tickets well in advance!</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $42 (day) / $52 (night)</span>
+            <span class="detail"><strong>Time:</strong> 2.5 – 3 hours</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Alcatraz Island Tour', '$42–$52')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="nature">
+          <div class="card-badge nature">Nature</div>
+          <h3>Golden Gate Park</h3>
+          <p>A 1,000+ acre urban park with gardens, museums, lakes, and bison paddock. Bigger than Central Park!</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free (park)</span>
+            <span class="detail"><strong>Time:</strong> Half day</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Golden Gate Park', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="culture">
+          <div class="card-badge culture">Culture</div>
+          <h3>Chinatown</h3>
+          <p>The oldest Chinatown in North America. Enter through the Dragon Gate on Grant Avenue. Explore temples, shops, and tea houses.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free to explore</span>
+            <span class="detail"><strong>Time:</strong> 2 – 3 hours</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Chinatown Walking Tour', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="landmark">
+          <div class="card-badge landmark">Landmark</div>
+          <h3>Fisherman's Wharf & Pier 39</h3>
+          <p>Watch the sea lions, browse shops, and enjoy street performers. Touristy but a must-see for first-time visitors.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free to explore</span>
+            <span class="detail"><strong>Time:</strong> 2 – 3 hours</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Fisherman\'s Wharf & Pier 39', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="neighborhood">
+          <div class="card-badge neighborhood">Neighborhood</div>
+          <h3>Painted Ladies & Alamo Square</h3>
+          <p>The famous row of colorful Victorian houses with the city skyline behind them. A postcard-perfect photo opportunity.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free</span>
+            <span class="detail"><strong>Time:</strong> 30 min – 1 hour</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Painted Ladies (Alamo Square)', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="nature">
+          <div class="card-badge nature">Nature</div>
+          <h3>Muir Woods (Day Trip)</h3>
+          <p>Ancient coastal redwood forest just 30 minutes north. Reserve parking or take the shuttle. An awe-inspiring experience.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $15 entrance</span>
+            <span class="detail"><strong>Time:</strong> Half day</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Muir Woods Day Trip', '$15')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="culture">
+          <div class="card-badge culture">Culture</div>
+          <h3>SF Museum of Modern Art (SFMOMA)</h3>
+          <p>World-class modern art museum with works by Warhol, Kahlo, Pollock, and more. Don't miss the living wall.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> $25</span>
+            <span class="detail"><strong>Time:</strong> 2 – 3 hours</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'SFMOMA Visit', '$25')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="neighborhood">
+          <div class="card-badge neighborhood">Neighborhood</div>
+          <h3>Lombard Street</h3>
+          <p>The "crookedest street in the world" with eight tight hairpin turns. Walk down for a unique experience and great views.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free</span>
+            <span class="detail"><strong>Time:</strong> 30 min</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Lombard Street Walk', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="nature">
+          <div class="card-badge nature">Nature</div>
+          <h3>Twin Peaks</h3>
+          <p>Two 922-foot peaks offering 360° panoramic views of the entire city. Best at sunset or on a clear day.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free</span>
+            <span class="detail"><strong>Time:</strong> 1 hour</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Twin Peaks Sunset', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="culture">
+          <div class="card-badge culture">Culture</div>
+          <h3>Mission District Murals</h3>
+          <p>Explore vibrant street art in Balmy Alley and Clarion Alley. A colorful, free outdoor gallery showcasing local artists.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free</span>
+            <span class="detail"><strong>Time:</strong> 1 – 2 hours</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Mission District Mural Walk', 'Free')">+ Add to Itinerary</button>
+        </div>
+
+        <div class="card" data-category="landmark">
+          <div class="card-badge landmark">Landmark</div>
+          <h3>Palace of Fine Arts</h3>
+          <p>A stunning Greco-Roman rotunda and colonnade originally built for the 1915 World's Fair. Beautiful at sunset.</p>
+          <div class="card-details">
+            <span class="detail"><strong>Cost:</strong> Free</span>
+            <span class="detail"><strong>Time:</strong> 1 hour</span>
+          </div>
+          <button class="btn-add" onclick="addToItinerary('sightseeing', 'Palace of Fine Arts', 'Free')">+ Add to Itinerary</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Itinerary Tab -->
+    <section id="itinerary" class="tab-content">
+      <h2>My Itinerary</h2>
+      <div id="trip-summary" class="trip-summary hidden">
+        <p><strong>Trip:</strong> <span id="summary-dates">Not set</span> | <strong>Travelers:</strong> <span id="summary-travelers">2</span> | <strong>Budget:</strong> <span id="summary-budget">Moderate</span></p>
+      </div>
+
+      <div id="itinerary-empty" class="empty-state">
+        <span class="empty-icon">📋</span>
+        <h3>Your itinerary is empty</h3>
+        <p>Browse the Transport, Food, and Sightseeing tabs and click "+ Add to Itinerary" to start planning your trip!</p>
+      </div>
+
+      <div id="itinerary-content" class="hidden">
+        <div class="itinerary-section" id="itinerary-transport">
+          <h3>🚌 Transport</h3>
+          <ul class="itinerary-list"></ul>
+        </div>
+        <div class="itinerary-section" id="itinerary-food">
+          <h3>🍽️ Food & Dining</h3>
+          <ul class="itinerary-list"></ul>
+        </div>
+        <div class="itinerary-section" id="itinerary-sightseeing">
+          <h3>🏛️ Sightseeing</h3>
+          <ul class="itinerary-list"></ul>
+        </div>
+      </div>
+
+      <div id="itinerary-actions" class="itinerary-actions hidden">
+        <button class="btn-primary" onclick="printItinerary()">Print Itinerary</button>
+        <button class="btn-danger" onclick="clearItinerary()">Clear All</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>SF Trip Planner &mdash; Plan your perfect San Francisco holiday</p>
+  </footer>
+
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
