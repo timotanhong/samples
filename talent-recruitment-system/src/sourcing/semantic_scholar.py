@@ -131,7 +131,15 @@ class SemanticScholarSourcer:
                     "fields": "title,authors,citationCount,year,fieldsOfStudy",
                     "year": "2020-",
                 },
+                timeout=15,
             )
+
+            if resp.status_code == 403:
+                logger.warning(
+                    "Semantic Scholar returned 403. This may be due to network restrictions. "
+                    "Try running from a different network or add a Semantic Scholar API key."
+                )
+                return []
 
             if resp.status_code == 429:
                 logger.warning("Semantic Scholar rate limit, waiting 30s...")
@@ -167,6 +175,12 @@ class SemanticScholarSourcer:
                     candidates.append(candidate)
                 time.sleep(0.5)
 
+        except httpx.ConnectError as e:
+            logger.warning(f"Cannot connect to Semantic Scholar API: {e}")
+        except httpx.ProxyError as e:
+            logger.warning(f"Semantic Scholar blocked by proxy: {e}")
+        except httpx.TimeoutException:
+            logger.warning(f"Semantic Scholar request timed out for query: {query}")
         except Exception as e:
             logger.error(f"Semantic Scholar search error: {e}")
 

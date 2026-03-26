@@ -13,11 +13,11 @@ class Settings(BaseSettings):
 
     # GitHub (leave empty for unauthenticated access, 60 req/hr)
     github_token: str = ""
+    github_search_max_results: int = 50
 
     @property
     def github_token_valid(self) -> bool:
         return bool(self.github_token) and self.github_token not in ("", "ghp_...", "ghp_")
-    github_search_max_results: int = 50
 
     # Semantic Scholar
     semantic_scholar_api_key: str = ""
