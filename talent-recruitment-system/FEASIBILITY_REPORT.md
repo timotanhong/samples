@@ -20,41 +20,104 @@ This report evaluates the feasibility of building an AI-powered talent recruitme
 
 ## 2. DSTA Talent Needs Analysis
 
-### 2.1 Key Technology Domains
+### 2.1 Programme Centres (18 Divisions)
 
-Based on DSTA's public website and career listings, the organization recruits across these core domains:
+DSTA is organized into 18 Programme Centres, each representing a distinct hiring domain:
+
+**Engineering Domain:**
+
+| Programme Centre | Focus Area |
+|-----------------|------------|
+| **Advanced Systems** | Next-generation defence systems |
+| **Air Systems** | Fighter jets, transport aircraft, helicopters, UAVs |
+| **Building & Infrastructure** | Resilient and smart defence infrastructure, protective technology |
+| **Land Systems** | Tracked vehicles, major fighting assets, robotics |
+| **Naval Systems** | Stealth frigates, naval helicopters, sea line defence |
+| **Simulation & Training Systems Hub** | Training transformation for the SAF |
+| **Systems Management** | Lifecycle management of defence systems |
+| **Masterplanning & Systems Architecting** | New concepts and architectures for SAF capability |
+| **Systems Engineering & C3 Centre** | Front-end planning, systems architecting |
+
+**Digital/Infocomm Domain:**
+
+| Programme Centre | Focus Area |
+|-----------------|------------|
+| **C3 Development** | Command, Control, and Communications solutions |
+| **Cybersecurity** | Advanced cyber defence, CyberSOC 2.0, risk assessment |
+| **Cyber AI** | AI-powered cyber threat detection |
+| **Digital Hub** | Digital innovation and transformation |
+| **Enterprise IT** | Data analytics, IoT, agile enterprise systems, digital services |
+| **Infocomm Infrastructure** | Secure networks, cloud data centres, IoT, mobility |
+| **Information** | AI, data analytics, counter-disinformation, hybrid warfare |
+| **Systems Resiliency** | System robustness and continuity |
+
+### 2.2 Key Technology Domains
 
 | Domain | Description |
 |--------|-------------|
-| **Artificial Intelligence & Machine Learning** | AI/ML solutions for defence applications |
-| **Cybersecurity** | Cyber defence solutions, risk assessment, threat monitoring |
-| **Data Analytics** | Large-scale data analysis for defence intelligence |
-| **Unmanned Systems & Robotics** | UAVs, autonomous vehicles, robotic platforms |
-| **Internet of Things (IoT)** | Connected sensor networks, smart infrastructure |
-| **Augmented/Virtual Reality** | Simulation, training systems, AR/VR applications |
-| **Command & Control Systems** | Military C2 platforms and integration |
-| **Sensors & Signal Processing** | Advanced sensing technologies |
-| **Software Engineering** | Full-stack development, systems engineering |
-| **UX/UI Design** | User experience for defence platforms |
+| **Artificial Intelligence & Machine Learning** | AI algorithms, disinformation countermeasures (MIT CSAIL collaboration), AI-powered cyber threat detection |
+| **Cybersecurity** | CyberSOC 2.0, cyber incident monitoring/detection/response, risk assessment |
+| **Data Analytics** | Enterprise IT, operational systems, decision support |
+| **Command, Control & Communications (C3)** | Situational awareness, decision-making, operational effectiveness |
+| **Autonomous Systems & Robotics** | UAVs, unmanned maritime drones, autonomous vehicles |
+| **Internet of Things (IoT)** | Smart utilities, sensor networks, mobility solutions |
+| **Virtual/Augmented/Extended Reality** | Simulation, training systems |
+| **Digital Twins** | Defence technology applications |
+| **Space Situational Awareness** | Partnership with Digantara Industries, National Space Agency |
+| **Cloud Computing** | Cloud data centres, secure infrastructure |
+| **Systems Engineering** | Large-scale defence system design and integration |
+| **Protective Technology & Smart Infrastructure** | Energy efficiency, smart utilities (SP Group partnership) |
+| **Software Development** | Systems integration, application development |
 
-### 2.2 Typical Role Profiles
+### 2.3 Typical Role Profiles
 
-- Cybersecurity Research Engineer
-- Visual AI Engineer (Digital Hub)
 - Software Engineer / Senior Engineer
+- Cybersecurity Engineer / Research Engineer
+- Visual AI Engineer (Digital Hub)
+- Data Scientist / Data Engineer
+- Systems Analyst / Business Analyst
+- Analyst Programmer
+- Network Administrator
 - Engineer (Unmanned Aircraft Systems)
 - UX Architect
-- Data Scientist / Data Engineer
-- Systems Architect
-- Facilities Management / Infrastructure Engineer
+- Procurement Specialist
 
-### 2.3 Talent Profile Characteristics
+Career progression follows two tracks: **Managerial** (leadership) and **Technical** (deep expertise).
 
-- Strong STEM background (Computer Science, Engineering, Mathematics, Physics)
-- Experience with defence/government systems is a plus
-- Singapore-based or willing to relocate
-- Security clearance eligible
-- Multi-disciplinary skills valued
+### 2.4 Talent Profile Characteristics
+
+**Required Qualifications:**
+- Singapore Citizenship (mandatory for most roles and all scholarships)
+- Degree in Engineering, Computing, IT, Mathematics, or Science
+- Good academic and co-curricular activity (CCA) track record
+
+**Key Skill Domains Sought:**
+- Systems engineering and integration
+- Software development (full-stack, embedded)
+- AI/ML and data analytics
+- Cybersecurity engineering and operations
+- Network and cloud infrastructure
+- IoT and sensor systems
+- Simulation and modelling
+- Robotics and autonomous systems
+
+### 2.5 Talent Pipeline Programmes (Sourcing Signals)
+
+These programmes represent key talent pipeline indicators the system should monitor:
+
+| Programme | Target | Description |
+|-----------|--------|-------------|
+| **DSTA Scholarship** | University students | Full sponsorship for STEM degrees; includes global internship |
+| **DSTA Merit Scholarship** | University students | Digital technologies and cybersecurity focus |
+| **DSTA Polytechnic Digital Scholarship** | Polytechnic students | IT/cybersecurity diplomas (no bond); AI, data analytics, IoT |
+| **Technology Undergraduate Programme (Tech UP)** | Top Year 2 undergrads | Exclusive internship + curated courses + networking |
+| **Technology Graduate Programme (TGP)** | Fresh graduates | Structured entry with career mentor and development plan |
+| **BrainHack** | Students (4,000+ participants) | Annual competition in cybersecurity, AI, XR, coding, space tech |
+| **Internships** | Students | 3–6 months in engineering, infocomm, cybersecurity |
+
+**Partner Organizations** (defence technology community):
+- DSO National Laboratories
+- CSIT (Centre for Strategic Infocomm Technologies)
 
 ---
 
