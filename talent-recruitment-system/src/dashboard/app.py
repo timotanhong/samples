@@ -31,12 +31,15 @@ def main():
     st.title("DSTA Talent Recruitment Intelligence")
     st.caption("AI-powered candidate sourcing and matching system")
 
-    tab_jobs, tab_candidates, tab_matches, tab_pipeline = st.tabs(
-        ["Job Postings", "Candidates", "Match Results", "Pipeline"]
+    tab_jobs, tab_resumes, tab_candidates, tab_matches, tab_pipeline = st.tabs(
+        ["Job Postings", "Resumes", "Candidates", "Match Results", "Pipeline"]
     )
 
     with tab_jobs:
         render_jobs_tab()
+
+    with tab_resumes:
+        render_resumes_tab()
 
     with tab_candidates:
         render_candidates_tab()
@@ -46,6 +49,184 @@ def main():
 
     with tab_pipeline:
         render_pipeline_tab()
+
+
+def render_resumes_tab():
+    """Show all sourced candidates in a resume/CV card format."""
+    st.header("Sourced Resumes")
+
+    session = get_session()
+    try:
+        total_count = session.query(CandidateProfile).count()
+
+        # Filters row
+        col_f1, col_f2, col_f3, col_f4 = st.columns([1, 1, 1, 1])
+        with col_f1:
+            source_filter = st.selectbox(
+                "Source", ["All", "GitHub", "Semantic Scholar"], key="resume_source"
+            )
+        with col_f2:
+            search_q = st.text_input("Search name / skills / bio", key="resume_search")
+        with col_f3:
+            sort_option = st.selectbox(
+                "Sort by", ["Newest First", "Name A-Z", "Most Followers", "Most Citations"],
+                key="resume_sort",
+            )
+        with col_f4:
+            st.metric("Total Resumes", total_count)
+
+        # Build query
+        source_map = {"GitHub": "github", "Semantic Scholar": "semantic_scholar"}
+        query = session.query(CandidateProfile)
+
+        if source_filter != "All":
+            query = query.join(CandidateSource).filter(
+                CandidateSource.source_type == source_map[source_filter]
+            )
+
+        if search_q:
+            like = f"%{search_q}%"
+            query = query.filter(
+                CandidateProfile.name.ilike(like)
+                | CandidateProfile.skills.ilike(like)
+                | CandidateProfile.bio.ilike(like)
+                | CandidateProfile.headline.ilike(like)
+            )
+
+        if sort_option == "Name A-Z":
+            query = query.order_by(CandidateProfile.name)
+        else:
+            query = query.order_by(CandidateProfile.created_at.desc())
+
+        candidates = query.limit(200).all()
+
+        if not candidates:
+            st.info("No resumes found. Run the GitHub or Semantic Scholar sourcer from the Pipeline tab.")
+            return
+
+        st.write(f"Showing **{len(candidates)}** of {total_count} resumes")
+        st.write("---")
+
+        # Render resume cards — two per row
+        for i in range(0, len(candidates), 2):
+            cols = st.columns(2)
+            for col_idx, col in enumerate(cols):
+                idx = i + col_idx
+                if idx >= len(candidates):
+                    break
+                candidate = candidates[idx]
+                _render_resume_card(col, candidate, session)
+
+    finally:
+        session.close()
+
+
+def _render_resume_card(col, candidate, session):
+    """Render a single resume card in the given column."""
+    sources = session.query(CandidateSource).filter_by(candidate_id=candidate.id).all()
+    source_types = [s.source_type for s in sources]
+
+    # Source badge
+    source_badge = ""
+    for st_type in source_types:
+        if st_type == "github":
+            source_badge += " `GitHub`"
+        elif st_type == "semantic_scholar":
+            source_badge += " `Scholar`"
+        else:
+            source_badge += f" `{st_type}`"
+
+    with col:
+        with st.container(border=True):
+            # Header: Name + source badge
+            st.markdown(f"### {candidate.name or 'Unknown'}{source_badge}")
+
+            if candidate.headline:
+                st.caption(candidate.headline)
+
+            # Location
+            if candidate.location:
+                st.write(f"**Location:** {candidate.location}")
+
+            # Bio
+            if candidate.bio:
+                bio_text = candidate.bio[:300]
+                if len(candidate.bio) > 300:
+                    bio_text += "..."
+                st.write(bio_text)
+
+            # Skills
+            if candidate.skills:
+                try:
+                    skills = json.loads(candidate.skills)
+                    if skills:
+                        skill_tags = " ".join([f"`{s}`" for s in skills[:8]])
+                        st.markdown(f"**Skills:** {skill_tags}")
+                except json.JSONDecodeError:
+                    st.write(f"**Skills:** {candidate.skills}")
+
+            # Source-specific metrics
+            if candidate.experience_summary:
+                try:
+                    exp = json.loads(candidate.experience_summary)
+
+                    # GitHub metrics
+                    if "followers" in exp:
+                        m1, m2, m3 = st.columns(3)
+                        m1.metric("Repos", exp.get("public_repos", 0))
+                        m2.metric("Followers", exp.get("followers", 0))
+                        # Count languages from recent repos
+                        repos = exp.get("recent_repos", [])
+                        langs = set()
+                        for r in repos:
+                            if r.get("language"):
+                                langs.add(r["language"])
+                        m3.metric("Languages", len(langs))
+
+                        # Top repos
+                        if repos:
+                            st.write("**Recent Projects:**")
+                            for repo in repos[:3]:
+                                stars = repo.get("stars", 0)
+                                star_str = f" ({stars} stars)" if stars > 0 else ""
+                                desc = repo.get("description", "")
+                                if desc:
+                                    desc = f" — _{desc[:60]}_"
+                                st.write(f"- **{repo.get('name', '')}**{star_str}{desc}")
+
+                    # Scholar metrics
+                    if "h_index" in exp:
+                        m1, m2, m3 = st.columns(3)
+                        m1.metric("h-index", exp.get("h_index", 0))
+                        m2.metric("Citations", exp.get("citation_count", 0))
+                        m3.metric("Papers", exp.get("paper_count", 0))
+
+                        # Affiliations
+                        affiliations = exp.get("affiliations", [])
+                        if affiliations:
+                            st.write(f"**Affiliations:** {', '.join(affiliations[:3])}")
+
+                        # Top papers
+                        top_papers = exp.get("top_papers", [])
+                        if top_papers:
+                            st.write("**Top Publications:**")
+                            for paper in top_papers[:3]:
+                                cites = paper.get("citations", 0)
+                                year = paper.get("year", "")
+                                year_str = f" ({year})" if year else ""
+                                st.write(f"- {paper.get('title', 'Untitled')}{year_str} — {cites} citations")
+
+                except json.JSONDecodeError:
+                    pass
+
+            # Profile link + email
+            link_parts = []
+            if candidate.profile_url:
+                link_parts.append(f"[View Profile]({candidate.profile_url})")
+            if candidate.email:
+                link_parts.append(f"[{candidate.email}](mailto:{candidate.email})")
+            if link_parts:
+                st.write(" | ".join(link_parts))
 
 
 def render_jobs_tab():
