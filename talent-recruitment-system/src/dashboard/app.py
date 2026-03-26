@@ -456,22 +456,17 @@ def render_pipeline_tab():
     st.header("Pipeline Controls")
     st.write("Manually trigger pipeline stages for testing.")
 
+    # Use session state to track which action to run (avoids Streamlit re-trigger bug)
+    if "pipeline_action" not in st.session_state:
+        st.session_state.pipeline_action = None
+
     col1, col2 = st.columns(2)
 
     with col1:
         st.subheader("1. Scrape Jobs")
-        if st.button("Run DSTA Job Scraper"):
-            with st.spinner("Scraping DSTA careers page..."):
-                from src.scrapers.dsta_careers import DSTACareersScraper
-
-                scraper = DSTACareersScraper()
-                try:
-                    stats = scraper.run()
-                    st.success(f"Done! New: {stats['new']}, Updated: {stats['updated']}, Unchanged: {stats['unchanged']}")
-                except Exception as e:
-                    st.error(f"Scraper error: {e}")
-                finally:
-                    scraper.close()
+        if st.button("Run DSTA Job Scraper", key="btn_scrape"):
+            st.session_state.pipeline_action = "scrape_jobs"
+            st.rerun()
 
         st.subheader("2. Source Candidates")
 
@@ -482,18 +477,11 @@ def render_pipeline_tab():
         )
         gh_location = st.text_input("GitHub location filter", value="Singapore")
 
-        if st.button("Run GitHub Sourcer"):
-            with st.spinner("Searching GitHub..."):
-                from src.sourcing.github import GitHubSourcer
-
-                sourcer = GitHubSourcer()
-                try:
-                    stats = sourcer.run(domains=gh_domains, location=gh_location)
-                    st.success(f"Done! New: {stats['new']}, Updated: {stats['updated']}")
-                except Exception as e:
-                    st.error(f"GitHub sourcer error: {e}")
-                finally:
-                    sourcer.close()
+        if st.button("Run GitHub Sourcer", key="btn_github"):
+            st.session_state.pipeline_action = "github_source"
+            st.session_state.gh_domains = gh_domains
+            st.session_state.gh_location = gh_location
+            st.rerun()
 
         scholar_domains = st.multiselect(
             "Scholar domains",
@@ -501,31 +489,16 @@ def render_pipeline_tab():
             default=["ai_ml", "cybersecurity"],
         )
 
-        if st.button("Run Semantic Scholar Sourcer"):
-            with st.spinner("Searching Semantic Scholar..."):
-                from src.sourcing.semantic_scholar import SemanticScholarSourcer
-
-                sourcer = SemanticScholarSourcer()
-                try:
-                    stats = sourcer.run(domains=scholar_domains)
-                    st.success(f"Done! New: {stats['new']}, Updated: {stats['updated']}")
-                except Exception as e:
-                    st.error(f"Scholar sourcer error: {e}")
-                finally:
-                    sourcer.close()
+        if st.button("Run Semantic Scholar Sourcer", key="btn_scholar"):
+            st.session_state.pipeline_action = "scholar_source"
+            st.session_state.scholar_domains = scholar_domains
+            st.rerun()
 
     with col2:
         st.subheader("3. Extract Requirements")
-        if st.button("Extract Job Requirements (Claude)"):
-            with st.spinner("Extracting requirements with Claude..."):
-                from src.matching.engine import MatchingEngine
-
-                engine = MatchingEngine()
-                try:
-                    engine.extract_and_save_requirements()
-                    st.success("Requirements extracted!")
-                except Exception as e:
-                    st.error(f"Extraction error: {e}")
+        if st.button("Extract Job Requirements (Claude)", key="btn_extract"):
+            st.session_state.pipeline_action = "extract_requirements"
+            st.rerun()
 
         st.subheader("4. Match Candidates")
 
@@ -540,29 +513,98 @@ def render_pipeline_tab():
             selected = st.selectbox("Job to match", list(job_options.keys()), key="match_job")
             selected_id = job_options[selected]
 
-            if st.button("Run Matching Engine (Claude)"):
-                with st.spinner("Scoring candidates with Claude..."):
-                    from src.matching.engine import MatchingEngine
-
-                    engine = MatchingEngine()
-                    try:
-                        results = engine.match_candidates_to_job(selected_id)
-                        st.success(f"Matched {len(results)} candidates!")
-                    except Exception as e:
-                        st.error(f"Matching error: {e}")
+            if st.button("Run Matching Engine (Claude)", key="btn_match"):
+                st.session_state.pipeline_action = "run_matching"
+                st.session_state.match_job_id = selected_id
+                st.rerun()
         else:
             st.info("No jobs available. Run the scraper first.")
 
         st.subheader("5. Database Stats")
-        if st.button("Refresh Stats"):
-            session = get_session()
+        if st.button("Refresh Stats", key="btn_stats"):
+            st.session_state.pipeline_action = "show_stats"
+            st.rerun()
+
+    # Execute the selected action (runs only once per click)
+    action = st.session_state.pipeline_action
+    if action:
+        st.session_state.pipeline_action = None  # Clear immediately to prevent re-run
+        st.write("---")
+        _execute_pipeline_action(action)
+
+
+def _execute_pipeline_action(action: str):
+    """Execute a single pipeline action."""
+    if action == "scrape_jobs":
+        with st.spinner("Scraping DSTA careers page..."):
+            from src.scrapers.dsta_careers import DSTACareersScraper
+            scraper = DSTACareersScraper()
             try:
-                st.write(f"- **Jobs:** {session.query(JobPosting).count()}")
-                st.write(f"- **Candidates:** {session.query(CandidateProfile).count()}")
-                st.write(f"- **Sources:** {session.query(CandidateSource).count()}")
-                st.write(f"- **Matches:** {session.query(MatchResult).count()}")
+                stats = scraper.run()
+                st.success(f"Done! New: {stats['new']}, Updated: {stats['updated']}, Unchanged: {stats['unchanged']}")
+            except Exception as e:
+                st.error(f"Scraper error: {e}")
             finally:
-                session.close()
+                scraper.close()
+
+    elif action == "github_source":
+        gh_domains = st.session_state.get("gh_domains", ["ai_ml"])
+        gh_location = st.session_state.get("gh_location", "Singapore")
+        with st.spinner(f"Searching GitHub for {', '.join(gh_domains)}..."):
+            from src.sourcing.github import GitHubSourcer
+            sourcer = GitHubSourcer()
+            try:
+                stats = sourcer.run(domains=gh_domains, location=gh_location)
+                st.success(f"Done! New: {stats['new']}, Updated: {stats['updated']}")
+            except Exception as e:
+                st.error(f"GitHub sourcer error: {e}")
+            finally:
+                sourcer.close()
+
+    elif action == "scholar_source":
+        scholar_domains = st.session_state.get("scholar_domains", ["ai_ml"])
+        with st.spinner(f"Searching Semantic Scholar for {', '.join(scholar_domains)}..."):
+            from src.sourcing.semantic_scholar import SemanticScholarSourcer
+            sourcer = SemanticScholarSourcer()
+            try:
+                stats = sourcer.run(domains=scholar_domains)
+                st.success(f"Done! New: {stats['new']}, Updated: {stats['updated']}")
+            except Exception as e:
+                st.error(f"Scholar sourcer error: {e}")
+            finally:
+                sourcer.close()
+
+    elif action == "extract_requirements":
+        with st.spinner("Extracting requirements with Claude..."):
+            from src.matching.engine import MatchingEngine
+            engine = MatchingEngine()
+            try:
+                engine.extract_and_save_requirements()
+                st.success("Requirements extracted!")
+            except Exception as e:
+                st.error(f"Extraction error: {e}")
+
+    elif action == "run_matching":
+        job_id = st.session_state.get("match_job_id")
+        if job_id:
+            with st.spinner("Scoring candidates with Claude..."):
+                from src.matching.engine import MatchingEngine
+                engine = MatchingEngine()
+                try:
+                    results = engine.match_candidates_to_job(job_id)
+                    st.success(f"Matched {len(results)} candidates!")
+                except Exception as e:
+                    st.error(f"Matching error: {e}")
+
+    elif action == "show_stats":
+        session = get_session()
+        try:
+            st.write(f"- **Jobs:** {session.query(JobPosting).count()}")
+            st.write(f"- **Candidates:** {session.query(CandidateProfile).count()}")
+            st.write(f"- **Sources:** {session.query(CandidateSource).count()}")
+            st.write(f"- **Matches:** {session.query(MatchResult).count()}")
+        finally:
+            session.close()
 
 
 def _update_feedback(match_id: int, feedback: str):
