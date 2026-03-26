@@ -127,7 +127,7 @@ These programmes represent key talent pipeline indicators the system should moni
 
 | Approach | Feasibility | Risk |
 |----------|-------------|------|
-| **LinkedIn Talent Solutions API** (official partner) | High — but requires partnership approval | Low |
+| **LinkedIn Talent Solutions API** (official partner) | High — but requires partnership approval (<10% approval rate, 3–6 months) | Low |
 | **LinkedIn Recruiter + Hiring Assistant** | High — LinkedIn's own AI tools | Low |
 | **Third-party tools using official APIs** | Medium — dependent on vendor | Low |
 | **Scraping public profiles (no account)** | Low — legal gray area | High |
@@ -135,10 +135,21 @@ These programmes represent key talent pipeline indicators the system should moni
 
 **Key Legal Context:**
 - LinkedIn actively enforces its Terms of Service against scrapers. In 2025, LinkedIn won against Proxycurl, forcing permanent deletion of all scraped data.
-- The hiQ v. LinkedIn case (settled 2022) established that even scraping publicly visible data can be contractually prohibited if you have a LinkedIn account.
+- The hiQ v. LinkedIn case (settled 2022): hiQ paid $500K, ceased scraping, and destroyed all data. LinkedIn prevailed on **contract law** claims, not the CFAA.
+- Meta v. Bright Data (Jan 2024): scraping only violates ToS if the scraper was logged in — reinforces the public-data principle, but contract risk remains.
+- LinkedIn moved much professional history behind a login wall in late 2025, further restricting public access.
 - LinkedIn offers an AI-powered "Hiring Assistant" within Recruiter that automates sourcing and reduces profile review by 62%.
+- As of Oct 2025, LinkedIn stopped accepting new partners for "Apply with LinkedIn," tightening the ecosystem further.
 
-**Recommendation:** Use LinkedIn Talent Solutions API (requires becoming an approved partner) or subscribe to LinkedIn Recruiter for official, legal access.
+**LinkedIn Recruiter Pricing:**
+
+| Product | Cost |
+|---------|------|
+| LinkedIn Recruiter (per seat) | $8,000–$12,000/year |
+| Recruiter Lite | ~$140–$170/month |
+| API & Premium Add-ons | +15–25% on base contract |
+
+**Recommendation:** Subscribe to LinkedIn Recruiter for official access. The Talent Solutions API partner track has very low approval rates and is not a reliable strategy for new entrants.
 
 ### 3.2 GitHub (Developer Talent)
 
@@ -147,13 +158,15 @@ These programmes represent key talent pipeline indicators the system should moni
 | **GitHub REST/GraphQL API** | High — generous rate limits, public data | Low |
 | **GitHub profile analysis** | High — contributions, repos, languages | Low |
 
-**What's Available:**
-- Public profiles, repositories, contribution history
-- Programming languages, project involvement
-- Star counts, follower networks
-- Organization memberships
+**What's Available (100M+ developer profiles):**
+- Public profiles (bio, location, company, email if public)
+- Repositories (languages, stars, forks)
+- Contribution graphs and commit histories
+- Follower counts, organization memberships
 
-**Relevance to DSTA:** Excellent for sourcing software engineers, AI/ML engineers, and cybersecurity researchers through code contributions.
+**Sourcing Techniques:** Filter by `language:`, `pushed:` (recent activity), `followers:` range, `stars:` on repos. Finding top contributors to relevant open-source projects (e.g., cybersecurity tools, ML frameworks) is one of the most effective strategies. Rate limits: 5,000 req/hr (authenticated).
+
+**Relevance to DSTA:** Excellent for sourcing software engineers, AI/ML engineers, and cybersecurity researchers. 83% of hiring managers trust GitHub profiles over traditional resumes.
 
 ### 3.3 Academic Sources
 
@@ -168,16 +181,27 @@ These programmes represent key talent pipeline indicators the system should moni
 
 **Relevance to DSTA:** Critical for sourcing AI/ML researchers, cybersecurity researchers, and signal processing experts.
 
-### 3.4 Other Public Sources
+### 3.4 Patent Databases (Underutilized Goldmine)
+
+Patent databases are an underutilized channel for sourcing engineers and scientists — many with sparse LinkedIn profiles **must** be listed on patent applications.
+
+| Source | Feasibility | Data Available |
+|--------|-------------|----------------|
+| **USPTO / PatentsView API** | High — free, stable | US patents, inventor disambiguation, CPC filtering (5M+ patents, 1M+ inventors since 2005) |
+| **Google Patents** | High — free full-text search | Global patent records |
+| **Lens.org** | High — REST API, open access | 140M+ patent records globally, composite author/inventor profiles linked to ORCID |
+
+**Relevance to DSTA:** Excellent for finding engineers and scientists in sensors, robotics, autonomous systems, and cybersecurity who may not have strong social media presence.
+
+### 3.5 Other Public Sources
 
 | Source | Feasibility | Use Case |
 |--------|-------------|----------|
-| **Stack Overflow / Stack Exchange** | High — public API | Developer expertise assessment |
-| **Patent databases (e.g., Google Patents)** | High — public | Innovation track record |
-| **Conference speaker lists** | Medium — manual curation | Domain experts |
-| **Professional association directories** | Medium — varies by org | Credentialed professionals |
-| **Government job boards (Careers@Gov)** | High — public | Current/former public sector talent |
-| **Kaggle** | High — public API | Data science / ML talent |
+| **Stack Overflow / Stack Exchange** | High — public API (14M+ users) | Developer expertise, tag scores, answer quality; real-time signal on active technologies |
+| **Conference speaker lists** | Medium — manual curation per event | Pre-qualified domain experts and thought leaders |
+| **Professional association directories** (IEEE, ACM) | Medium — varies by org | Credentialed professionals in engineering/CS |
+| **MyCareersFuture Singapore** | Medium — no public API | 280,000+ job seekers; AI-powered Job-to-Skills matching |
+| **Kaggle** | High — public API | Data science / ML talent, competition rankings |
 
 ---
 
@@ -185,29 +209,44 @@ These programmes represent key talent pipeline indicators the system should moni
 
 ### 4.1 Singapore PDPA Compliance
 
-The Personal Data Protection Act (PDPA) imposes strict requirements:
+The Personal Data Protection Act (PDPA) imposes requirements but is **relatively favorable** for talent sourcing from public data:
 
-- **Consent:** Must obtain consent before collecting personal data, or rely on a legitimate purpose exception
+- **Publicly Available Data Exemption:** The PDPA **does not require consent** for collecting personal data that is publicly available (e.g., voluntarily published on professional platforms). This is a key enabler for the system.
 - **Purpose Limitation:** Data collected only for stated recruitment purposes
 - **Data Minimization:** Only collect what's necessary at each recruitment stage
-- **Retention:** Must delete candidate data when no longer needed
-- **Penalties:** Up to SGD $1 million or 10% annual turnover for breaches
+- **Retention:** Data from unsuccessful candidates should not be kept indefinitely
+- **Data Protection Officer (DPO):** Must be appointed
+- **Penalties:** Up to SGD $1 million or 10% annual turnover (whichever higher); enforcement actions have increased 48% since 2021
+- **PDPC Advisory Guidelines** specifically address sourcing from social networks and recruitment scenarios
 
-### 4.2 Key Compliance Requirements for the System
+### 4.2 GDPR Considerations (for EU-Based Candidates)
+
+If sourcing candidates in the EU/EEA, GDPR is significantly more restrictive:
+
+- **Legitimate interest** can be claimed, but candidates must be contacted within one month and explicit consent obtained to continue processing
+- **Building talent databases "just in case" is illegal** — must have specific, current intent to contact
+- **Automated decision-making:** Candidates have the right to request human intervention and explanation of AI logic
+- **Right to deletion:** Must be honored within 30 days
+- **Penalties:** Up to EUR 20 million or 4% of global annual turnover
+
+### 4.3 Key Compliance Requirements for the System
 
 1. **Transparency:** Inform candidates how their publicly available data was found and is being used
 2. **Opt-Out Mechanism:** Provide a way for individuals to request removal from the system
 3. **Data Protection:** Encryption at rest and in transit, access controls, audit logs
-4. **Bias Mitigation:** Regular audits of AI matching algorithms for fairness
+4. **Bias Mitigation:** Regular audits of AI matching algorithms for fairness; exclude name, photo, age, demographic signals from matching features
 5. **Fair Consideration Framework (FCF):** Ensure compliance with Singapore's fair hiring guidelines
 6. **AI Governance:** Align with Singapore's Model AI Governance Framework and AI Verify toolkit
+7. **Human-in-the-Loop:** All hiring decisions must involve human review (NYC Local Law 144 trend)
 
-### 4.3 Recommended Legal Approach
+### 4.4 Recommended Legal Approach
 
 - Use only **official APIs** and **publicly shared data** (no scraping)
+- Leverage PDPA's **publicly available data exemption** as primary legal basis
 - Implement **privacy-by-design** principles
 - Maintain **audit trails** for all candidate data processing
-- Conduct **regular PDPA compliance reviews**
+- Implement **geo-based compliance routing** (PDPA for SG candidates, GDPR for EU candidates)
+- Appoint a **Data Protection Officer** and conduct regular PDPA compliance reviews
 - Engage legal counsel specializing in Singapore data protection law
 
 ---
@@ -416,16 +455,19 @@ Final Score = w1 × Skill_Match + w2 × Experience_Match + w3 × Domain_Relevanc
 
 Before building a custom system, consider these established platforms:
 
-| Platform | Strengths | Pricing |
-|----------|-----------|---------|
-| **SeekOut** | Deep tech talent search, GitHub/Scholar integration, diversity | Enterprise pricing |
-| **Eightfold.ai** | AI matching, talent intelligence, large profile database | Enterprise pricing |
-| **hireEZ (Hiretual)** | Multi-source sourcing, outreach automation | $149+/month |
-| **Juicebox (PeopleGPT)** | Natural language search, 800M+ profiles | Custom pricing |
-| **HeroHunt.ai** | GPT-powered sourcing, cross-platform search | Custom pricing |
-| **LinkedIn Recruiter** | Largest professional network, AI Hiring Assistant | $8,000+/month |
+| Platform | Strengths | Database Size | Pricing |
+|----------|-----------|---------------|---------|
+| **SeekOut** | Deep tech search, GitHub/patent/publication analysis, diversity filters; claims 70% more candidates than LinkedIn alone | 1B+ profiles | $10,000+/year |
+| **Eightfold.ai** | Deep learning talent intelligence, skills mapping, career pathing | Not disclosed | Enterprise custom |
+| **hireEZ (Hiretual)** | Agentic AI sourcing, broadest international coverage, CRM + analytics | 800M+ profiles | $169–$450+/month |
+| **Entelo** | Source-to-hire automation, ML-based candidate prediction | 500M+ profiles | Custom pricing |
+| **Juicebox (PeopleGPT)** | Natural language search ("find me a founding engineer for a fintech startup") | 800M+ profiles | Custom pricing |
+| **AmazingHiring** | Aggregates 50+ sources (GitHub, Stack Overflow, Kaggle) into consolidated profiles | Not disclosed | Custom pricing |
+| **LinkedIn Recruiter** | Largest professional network, AI Hiring Assistant | 1B+ members | $8,000–$12,000/year |
 
-**Build vs. Buy Recommendation:** A hybrid approach is recommended — use LinkedIn Recruiter for LinkedIn-specific sourcing, and build a custom system for GitHub/academic/open-source intelligence that is tailored to DSTA's unique defence technology domains.
+**Build vs. Buy Recommendation:** A hybrid approach is recommended:
+- **Buy:** LinkedIn Recruiter for professional network sourcing (the data moat is insurmountable)
+- **Build:** Custom system for open-source intelligence (GitHub, academic, patents) tailored to DSTA's unique defence technology domains — this is where differentiation lies, as commercial tools lack defence-sector specialization
 
 ---
 
