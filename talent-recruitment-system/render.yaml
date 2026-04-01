@@ -1,0 +1,21 @@
+services:
+  # Streamlit Dashboard
+  - type: web
+    name: talent-miner
+    runtime: docker
+    plan: free
+    envVars:
+      - key: TRS_ANTHROPIC_API_KEY
+        sync: false
+      - key: TRS_GITHUB_TOKEN
+        sync: false
+      - key: TRS_SEMANTIC_SCHOLAR_API_KEY
+        sync: false
+      - key: TRS_DATABASE_URL
+        value: sqlite:///talent_recruitment.db
+      - key: TRS_CLAUDE_MODEL
+        value: claude-sonnet-4-20250514
+      - key: TRS_MATCH_TOP_N
+        value: "20"
+      - key: TRS_MIN_MATCH_SCORE
+        value: "0.3"
